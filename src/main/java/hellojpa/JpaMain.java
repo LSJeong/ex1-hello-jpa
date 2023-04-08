@@ -18,6 +18,27 @@ public class JpaMain {
         //트랜잭션 시작
         tx.begin();
         try {
+
+            //저장
+            Team team = new Team();
+            team.setName("TeamA");
+            em.persist(team);
+
+            Member member = new Member();
+            member.setUsername("member1");
+            //member.setTeamId(team.getId());
+            member.setTeam(team);
+            em.persist(member);
+
+            em.flush();
+            em.clear();
+
+            //조회
+            Member findMember = em.find(Member.class, member.getId());
+            Team findTeam = findMember.getTeam();
+            System.out.println("findTeam = " + findTeam.getName());
+
+
             /*Member member = new Member();
             member.setId(2L);
             member.setName("HelloB");*/
@@ -44,6 +65,7 @@ public class JpaMain {
             for(Member member : result){
                 System.out.println("member.name = " + member.getName());
             }*/
+/*
 
             //비영속
             Member member = new Member();
@@ -75,7 +97,7 @@ public class JpaMain {
 
             //영속성 컨텍스트를 완전 초기화
             em.clear();
-
+*/
 
             //트랜잭션 commit
             //commit하는 순간 DB에 insert

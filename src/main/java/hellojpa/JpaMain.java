@@ -27,17 +27,24 @@ public class JpaMain {
             Member member = new Member();
             member.setUsername("member1");
             //member.setTeamId(team.getId());
-            member.setTeam(team);
+            //member.setTeam(team);  //연관관계 주인에 값 설정
+            member.changeTeam(team);
+
             em.persist(member);
+
+            //team.getMembers().add(member);  //양쪽에 값 설정
 
             em.flush();
             em.clear();
 
             //조회
             Member findMember = em.find(Member.class, member.getId());
-            Team findTeam = findMember.getTeam();
-            System.out.println("findTeam = " + findTeam.getName());
-
+            //Team findTeam = findMember.getTeam();
+            //System.out.println("findTeam = " + findTeam.getName());
+            List<Member> members = findMember.getTeam().getMembers();  //양방향 연관관계
+            for (Member m : members) {
+                System.out.println("m = " + m.getUsername());
+            }
 
             /*Member member = new Member();
             member.setId(2L);

@@ -3,7 +3,9 @@ package hellojpa;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Entity  //JPA가 관리할 객체
 //@Table(name = "USER")  테이블명이 USER로 되어있을때 이렇게 사용
@@ -32,6 +34,12 @@ public class Member {
     @OneToOne
     @JoinColumn(name = "LOCKER_ID")
     private Locker locker;
+
+    //다대다 //연결테이블 생성됨
+    //실무에서 쓰기는 어려움, 연결테이블용 엔티티 추가 해서 쓰자
+    @ManyToMany
+    @JoinTable(name = "MEMBER_PRODUCT")
+    private List<Product> products = new ArrayList<>();
 
     public Team getTeam() {
         return team;

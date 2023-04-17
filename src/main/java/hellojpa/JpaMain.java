@@ -22,8 +22,13 @@ public class JpaMain {
         tx.begin();
         try {
 
+            Team team = new Team();
+            team.setName("teamA");
+            em.persist(team);
+
             Member member1 = new Member();
             member1.setUsername("member1");
+            member1.setTeam(team);
             em.persist(member1);
 
             Member member2 = new Member();
@@ -32,6 +37,15 @@ public class JpaMain {
 
             em.flush();
             em.clear();
+
+            //FetchType.LAZY 지연로딩, 프록시
+            Member m = em.find(Member.class, member1.getId()); //쿼리나갈때 team 조회하지않음
+            System.out.println("m = " + m.getTeam().getClass());
+
+            System.out.println("===================");
+            m.getTeam().getName();  //실제 team을 사용하는 시점에서 초기화
+            System.out.println("===================");
+
 
 /*
 
@@ -67,13 +81,15 @@ public class JpaMain {
             System.out.println("refMember = " + refMember.getUsername());*/
 
 
-            Member refMember = em.getReference(Member.class, member1.getId());
+           /* Member refMember = em.getReference(Member.class, member1.getId());
             System.out.println("refMember = " + refMember.getClass());  //프록시
             //프록시 인스턴스의 초기화 여부확인
             System.out.println("isLoaded= "+ emf.getPersistenceUnitUtil().isLoaded(refMember)); //false
             //refMember.getUsername();  //강제 초기화
             Hibernate.initialize(refMember); //강제 초기화
             System.out.println("isLoaded2= "+ emf.getPersistenceUnitUtil().isLoaded(refMember)); //true
+*/
+
 
             /*Member member = new Member();
             member.setUsername("user1");

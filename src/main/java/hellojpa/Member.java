@@ -26,7 +26,11 @@ public class Member extends BaseEntity{
     /*@Column(name = "TEAM_ID")
     private Long teamId;*/
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)  //지연로딩. Team을 프록시로 조회
+    //@ManyToOne(fetch = FetchType.EAGER) //즉시로딩, 실무에서는 가급적 지연 로딩만 사용
+    //즉시로딩=> JPQL에서 N+1 문제를 일으킴
+    //@ManyToOne, @OneToOne 은 기본이 즉시 로딩이므로 LAZY로 설정
+    //@OneToMany, @ManyToMany는 기본이 지연 로딩
     @JoinColumn(name = "TEAM_ID")
     private Team team;
 
@@ -66,6 +70,9 @@ public class Member extends BaseEntity{
         this.username = username;
     }
 
+    public void setTeam(Team team) {
+        this.team = team;
+    }
 
 /* @Id  //pk
     @GeneratedValue(strategy = GenerationType.SEQUENCE

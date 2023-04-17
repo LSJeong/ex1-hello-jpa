@@ -1,5 +1,7 @@
 package hellojpa;
 
+import org.hibernate.Hibernate;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
@@ -20,10 +22,63 @@ public class JpaMain {
         tx.begin();
         try {
 
-            Member member = new Member();
+            Member member1 = new Member();
+            member1.setUsername("member1");
+            em.persist(member1);
+
+            Member member2 = new Member();
+            member2.setUsername("member2");
+            em.persist(member2);
+
+            em.flush();
+            em.clear();
+
+/*
+
+            Member findMember = em.getReference(Member.class, member1.getId()); //쿼리 안나감
+            System.out.println("findMember = " + findMember.getClass()); //class hellojpa.Member$HibernateProxy
+            System.out.println("findMember.id = " + findMember.getId());
+            System.out.println("findMember.username = " + findMember.getUsername());  //이때 DB에 쿼리
+*/
+/*
+
+            Member m1 = em.find(Member.class, member1.getId());  //영속성 컨테이너에 올라감
+            Member m2 = em.find(Member.class, member2.getId());
+            System.out.println("m1 == m2 : " + (m1.getClass() == m2.getClass()));  //true
+*/
+
+           /* Member m1 = em.find(Member.class, member1.getId());
+            Member m2 = em.getReference(Member.class, member2.getId());
+            System.out.println("m1 == m2 : " + (m1.getClass() == m2.getClass()));  //false
+            System.out.println("m1 == m2 : " + (m2 instanceof Member)); //true
+            //타입 체크시 instance of 사용
+
+            Member reference = em.getReference(Member.class, member1.getId());
+            //이미 영속성 컨테이너에 올라가 있기때문에 프록시가 아님 class hellojpa.Member
+            System.out.println("reference = " + reference.getClass());
+            System.out.println("a == a: " + (m1 == reference)); //true
+*/
+
+           /* Member refMember = em.getReference(Member.class, member1.getId());
+            System.out.println("refMember = " + refMember.getClass());  //프록시
+            //em.detach(refMember);  //준영속성 상태
+            em.clear();
+            //LazyInitializationException:could not initialize proxy [hellojpa.Member#1] - no Session
+            System.out.println("refMember = " + refMember.getUsername());*/
+
+
+            Member refMember = em.getReference(Member.class, member1.getId());
+            System.out.println("refMember = " + refMember.getClass());  //프록시
+            //프록시 인스턴스의 초기화 여부확인
+            System.out.println("isLoaded= "+ emf.getPersistenceUnitUtil().isLoaded(refMember)); //false
+            //refMember.getUsername();  //강제 초기화
+            Hibernate.initialize(refMember); //강제 초기화
+            System.out.println("isLoaded2= "+ emf.getPersistenceUnitUtil().isLoaded(refMember)); //true
+
+            /*Member member = new Member();
             member.setUsername("user1");
             member.setCreatedBy("kim");
-            member.setCreateDate(LocalDateTime.now());
+            member.setCreateDate(LocalDateTime.now());*/
 
             /* 상속관계
             Movie movie = new Movie();
@@ -132,10 +187,12 @@ public class JpaMain {
             tx.commit();
         }catch (Exception e){
             tx.rollback();
+            e.printStackTrace();
         }finally {
             em.close();
         }
 
         emf.close();
     }
+
 }

@@ -45,6 +45,23 @@ public class Member extends BaseEntity{
     @JoinTable(name = "MEMBER_PRODUCT")
     private List<Product> products = new ArrayList<>();
 
+
+    @Embedded  //값 타입을 사용하는 곳에 정의
+    private Period workPeriod;
+
+    @Embedded
+    private Address homeAddress;
+
+    //한 엔티티에서 같은 값 타입을 사용하면? => 칼럼 중복
+    //@AttributeOverrides, @AttributeOverride를 사용해서 컬러 명 속성을 재정의
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "city", column = @Column(name = "WORK_CITY")),
+            @AttributeOverride(name = "street", column = @Column(name = "WORK_STREET")),
+            @AttributeOverride(name = "zipcode", column = @Column(name = "WORK_ZIPCODE"))
+    })
+    private Address workAddress;
+
     public Team getTeam() {
         return team;
     }

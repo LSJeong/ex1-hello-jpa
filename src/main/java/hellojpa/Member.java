@@ -3,9 +3,7 @@ package hellojpa;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Entity  //JPA가 관리할 객체
 //@Table(name = "USER")  테이블명이 USER로 되어있을때 이렇게 사용
@@ -51,6 +49,21 @@ public class Member extends BaseEntity{
 
     @Embedded
     private Address homeAddress;
+
+    @ElementCollection
+    @CollectionTable(name = "FAVORITE_FOOD", joinColumns =
+        @JoinColumn(name = "MEMBER_ID"))
+    @Column(name = "FOOD_NAME")
+    private Set<String> favoriteFoods = new HashSet<>();
+
+//    @ElementCollection
+//    @CollectionTable(name = "ADDRESS", joinColumns =
+//        @JoinColumn(name = "MEMBER_ID"))
+//    private List<Address> addressHistory = new ArrayList<>();
+    //값타입 컬렉션 대신에 일대다 관계를 고려
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "MEMBER_ID")
+    private List<AddressEntity> addressHistory = new ArrayList<>();
 
     //한 엔티티에서 같은 값 타입을 사용하면? => 칼럼 중복
     //@AttributeOverrides, @AttributeOverride를 사용해서 컬러 명 속성을 재정의
